@@ -25,7 +25,7 @@ def extract_zst(archive: Path, out_path: Path):
     out_path = Path(out_path).expanduser().resolve()
     # need .resolve() in case intermediate relative dir doesn't exist
 
-    dctx = zstandard.ZstdDecompressor()
+    dctx = zstandard.ZstdDecompressor(max_window_size=2147483648)
 
     with tempfile.TemporaryFile(suffix=".tar") as ofh:
         with archive.open("rb") as ifh:
