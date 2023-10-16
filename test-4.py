@@ -6,7 +6,7 @@
 # arguments are inputfile, outputfile, fields
 # call this like
 #TANAY CALL THIS IN THE TERMINAL LIKE THIS
-# python3 test-4.py RC_2005-12.zst output.csv author,selftext,title
+# python3 test-4.py RC_2005-12.zst output.csv controversiality,body,subreddit_id,link_id,stickied,subreddit,score
 
 import zstandard
 import os
@@ -55,7 +55,7 @@ def read_lines_zst(file_name):
 if __name__ == "__main__":
 	input_file_path = sys.argv[1]
 	output_file_path = sys.argv[2]
-	fields = sys.argv[3]
+	fields = sys.argv[3].split(",")
 
 	file_size = os.stat(input_file_path).st_size
 	file_lines = 0
