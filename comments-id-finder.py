@@ -8,8 +8,9 @@
 #TANAY CALL THIS IN THE TERMINAL LIKE THIS
 # python3 comments_converter.py AskWomen_comments.zst askwomen_test.csv body,subreddit,parent_id,created_utc
 
-# fields = [link_id, body]
-# python3 comments-id-finder.py reddit/comments/RC_2019-10.zst sc_combined_test.csv askwomen_test.csv  link_id,body
+#ISI THIS IS THE NEW COMMAND, INPUT AND OUTPUT TO BE CHANGED
+# fields = [link_id,body,author,parent_id]
+# python3 comments-id-finder.py reddit/comments/RC_2019-10.zst sc_combined_test_two.csv output-submissions-askwomen-trial.csv  link_id,body,author,parent_id
 
 import zstandard
 import os
@@ -18,7 +19,7 @@ import sys
 import csv
 from datetime import datetime
 import logging.handlers
-from submission_id_extractor import extract_third_element
+from submission_id_extractor import extract_author_id
 
 
 log = logging.getLogger("bot")
@@ -72,8 +73,8 @@ if __name__ == "__main__":
 	writer = csv.writer(output_file)
 	writer.writerow(fields)
 
-	# Extract list of all the ids corresponding to the submissions in that subreddit
-	sub_id_dict = extract_third_element(input_submissions_path)
+	# Extract list of all the ids and authors corresponding to the submissions in that subreddit, structured as {"id": ["title", "author"]}
+	sub_id_author_dict = extract_author_id(input_submissions_path)
 
 	try:
 		for line, file_bytes_processed in read_lines_zst(input_file_path):
@@ -82,21 +83,42 @@ if __name__ == "__main__":
 				output_obj = []
 				# we are playing with this part of the code
 				# print(str(obj[fields[0]]))
-				for link_id in sub_id_dict.keys():
-					if str(obj[fields[0]]) == link_id:
+				# print(sub_id_author_dict.keys()[0:5])
+				id_list = list(sub_id_author_dict.keys())
+
+				# print("I am getting here...")
+				# print(id_list[0:5])
+				# print(str(obj[fields[0]]))
+
+				for link_id in id_list:
+					if str(obj[fields[3]]) == link_id:
+						# print(str(obj[fields[3]]))
+						# print(link_id)
 						# print("I found one, it seems...")
 						# output_obj.append(str(obj[fields[0]]).encode("utf-8", errors='replace').decode())
-						output_obj.append(str(sub_id_dict[link_id]))
-						output_obj.append(str(obj[fields[1]]).encode("utf-8", errors='replace').decode())
-	
-				writer.writerow(output_obj)
 
+						# if str(obj[fields[0]]) == str(obj[fields[3]]):
+						# 	print("Failed the parent_id check")
+						# 	pass
+
+						if str(obj[fields[2]]) == str(sub_id_author_dict[link_id][1]):
+							# print("Failed the author check")
+							pass
+
+						else:
+							# print("Adding to csv")
+							output_obj.append(str(sub_id_author_dict[link_id][0]))
+							output_obj.append(str(obj[fields[1]]).encode("utf-8", errors='replace').decode())
+							writer.writerow(output_obj)
+							file_lines += 1
+	
 				created = datetime.utcfromtimestamp(int(obj['created_utc']))
 			except json.JSONDecodeError as err:
 				bad_lines += 1
-			file_lines += 1
-			if file_lines % 10000 == 0:
+			
+			if file_lines == 100:
 				log.info(f"{created.strftime('%Y-%m-%d %H:%M:%S')} : {file_lines:,} : {bad_lines:,} : {(file_bytes_processed / file_size) * 100:.0f}%")
+				break
 	except KeyError as err:
 		log.info(f"Object has no key: {err}")
 		log.info(line)

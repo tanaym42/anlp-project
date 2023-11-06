@@ -5,11 +5,14 @@
 #
 # arguments are inputfile, outputfile, fields
 # call this like
+
 #TANAY CALL THIS IN THE TERMINAL LIKE THIS
 # python3 test-4.py RC_2005-12.zst output.csv controversiality,body,subreddit_id,link_id,stickied,subreddit,score
 # python3 test-4.py RC_2006-01.zst output-3.csv body,subreddit,score
 # reddit/submissions/RS_2019-10.zst
-# python3 submissions-tester.py reddit/submissions/RS_2019-10.zst output-submissions-askwomen.csv title,subreddit,id
+
+#ISI COMMAND BELOW MUST BE RUN TO CREATE THE SUBMISSIONS CSV THAT WILL BE USED IN THE NEXT STEP - THE INPUT ZST CAN CHANGE AND THE OUTPUT CAN CHANGE THE REST SHOULD STAY
+# python3 submissions-tester.py reddit/submissions/RS_2019-10.zst output-submissions-askwomen-trial.csv title,subreddit,id,hidden,num_comments,author,selftext,media,media_embed,media_only
 
 # {"all_awardings":[],"allow_live_comments":false,"archived":false,"author":"Independent-Ad7276","author_created_utc":1596964740,"author_flair_background_color":null,"author_flair_css_class":null,"author_flair_richtext":[],"author_flair_template_id":null,"author_flair_text":null,"author_flair_text_color":null,"author_flair_type":"text","author_fullname":"t2_7mkth3e9","author_patreon_flair":false,"author_premium":false,"awarders":[],"banned_by":null,"can_gild":true,"can_mod_post":false,"category":null,"content_categories":null,"contest_mode":false,"created_utc":1667261166,"discussion_type":null,"distinguished":null,"domain":"self.AskWomen","edited":false,"gilded":0,"gildings":{},"hidden":false,"hide_score":false,"id":"yit7li","is_created_from_ads_ui":false,"is_crosspostable":false,"is_meta":false,"is_original_content":false,"is_reddit_media_domain":false,"is_robot_indexable":false,"is_self":true,"is_video":false,"link_flair_background_color":"","link_flair_css_class":null,"link_flair_richtext":[],"link_flair_text":null,"link_flair_text_color":"dark","link_flair_type":"text","locked":true,"media":null,"media_embed":{},"media_only":false,"name":"t3_yit7li","no_follow":true,"num_comments":1,"num_crossposts":0,"over_18":false,"parent_whitelist_status":"all_ads","permalink":"\/r\/AskWomen\/comments\/yit7li\/what_are_your_thoughts_about_grown_up_men_that\/","pinned":false,"pwls":6,"quarantine":false,"removed_by":null,"removed_by_category":"moderator","retrieved_on":1668014925,"score":1,"secure_media":null,"secure_media_embed":{},"selftext":"","send_replies":true,"spoiler":false,"stickied":false,"subreddit":"AskWomen","subreddit_id":"t5_2rxrw","subreddit_name_prefixed":"r\/AskWomen","subreddit_subscribers":4419505,"subreddit_type":"public","suggested_sort":"top","thumbnail":"default","thumbnail_height":null,"thumbnail_width":null,"title":"What are your thoughts about grown up men that still wear baseball hats all the time? (indoors, at night, etc.)","top_awarded_type":null,"total_awards_received":0,"treatment_tags":[],"upvote_ratio":1.0,"url":"https:\/\/www.reddit.com\/r\/AskWomen\/comments\/yit7li\/what_are_your_thoughts_about_grown_up_men_that\/","view_count":null,"whitelist_status":"all_ads","wls":6}
 
@@ -71,19 +74,41 @@ if __name__ == "__main__":
 	output_file = open(output_file_path, "w", encoding='utf-8', newline="")
 	writer = csv.writer(output_file)
 	writer.writerow(fields)
+
+	i = 0
+
 	try:
 		for line, file_bytes_processed in read_lines_zst(input_file_path):
 			try:
 				obj = json.loads(line)
 				output_obj = []
 
-				# fields = [title, subreddit, id]
+				# fields = [title,subreddit,id,hidden,num_comments,author,selftext,media,media_embed,media_only]
 				subreddit_name = str(obj[fields[1]]).encode("utf-8", errors='replace').decode()
+				# print(subreddit_name)
+				hidden_status = str(obj[fields[3]]).encode("utf-8", errors='replace').decode()
+				# print(hidden_status)
+				# print(type(hidden_status))
+				number_comments = int(obj[fields[4]])
+				# print(number_comments)
 
-				if subreddit_name == "AskWomen":
+				author = str(obj[fields[5]]).encode("utf-8", errors='replace').decode()
+
+				media_check_one = str(obj[fields[7]]).encode("utf-8", errors='replace').decode()
+				# print(media_check_one)
+				# print(type(media_check_one))
+
+				media_check_two = str(obj[fields[8]]).encode("utf-8", errors='replace').decode()
+				media_check_three = str(obj[fields[9]]).encode("utf-8", errors='replace').decode()
+
+				if (subreddit_name == "AskWomen") and (hidden_status == "False") and (number_comments > 5) and (media_check_one == "None") and (author != "[deleted]"):
+					#print("Cleared all checks")
 					output_obj.append(str(obj[fields[0]]).encode("utf-8", errors = 'replace').decode())
 					output_obj.append(str(obj[fields[1]]).encode("utf-8", errors = 'replace').decode())
 					output_obj.append(str(obj[fields[2]]).encode("utf-8", errors = 'replace').decode())
+					output_obj.append(str(obj[fields[4]]).encode("utf-8", errors = 'replace').decode())
+					output_obj.append(str(obj[fields[5]]).encode("utf-8", errors = 'replace').decode())
+
 					writer.writerow(output_obj)
 
 				created = datetime.utcfromtimestamp(int(obj['created_utc']))
