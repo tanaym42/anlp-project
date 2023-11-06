@@ -104,13 +104,15 @@ if __name__ == "__main__":
 						if str(obj[fields[2]]) == str(sub_id_author_dict[link_id][1]):
 							# print("Failed the author check")
 							pass
-
 						else:
-							# print("Adding to csv")
-							output_obj.append(str(sub_id_author_dict[link_id][0]))
-							output_obj.append(str(obj[fields[1]]).encode("utf-8", errors='replace').decode())
-							writer.writerow(output_obj)
-							file_lines += 1
+							if (str(obj[fields[1]]) == "[deleted]") or (str(obj[fields[1]]) == "[removed]") or ("**" in str(obj[fields[1]])) :
+								pass
+								# print("Adding to csv")
+							else:
+								output_obj.append(str(sub_id_author_dict[link_id][0]))
+								output_obj.append(str(obj[fields[1]]).encode("utf-8", errors='replace').decode())
+								writer.writerow(output_obj)
+								file_lines += 1
 	
 				created = datetime.utcfromtimestamp(int(obj['created_utc']))
 			except json.JSONDecodeError as err:
