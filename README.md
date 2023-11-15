@@ -18,4 +18,15 @@ The code does need to be cleaned up. It could be more efficient by running them 
 Need to figure out how to sample more effectively. Do we sample some every year, which will be very download heavy? Or should we take a few months from every year, in which case we need to change our download strategy. 
 
 
+**Iteration 3:**
+
+Just run the following command in terminal: 
+python3 main.py reddit/submissions/RS_2019-10.zst reddit/comments/RC_2019-10.zst output/2019-10.csv
+
+Before running the command, make sure RS and RC pairs are stored correctly in the files - and that the output file is of the format specified above ("output/YEAR-MM.csv). It should return for the specifications made. 
+
+I would only like to be able to filter out very short comments and submissions -- but that might be done later in processing as well. 
+
+
+
 

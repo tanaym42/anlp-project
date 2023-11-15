@@ -1,0 +1,6 @@
+*.csv
+*.zst
+reddit/
+pushshift_working/
+.DS_Store
+*.pyc
