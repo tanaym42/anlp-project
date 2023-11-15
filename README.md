@@ -18,4 +18,15 @@ The code does need to be cleaned up. It could be more efficient by running them 
 Need to figure out how to sample more effectively. Do we sample some every year, which will be very download heavy? Or should we take a few months from every year, in which case we need to change our download strategy. 
 
 
+**Iteration 3:**
+
+1. Run the combined 
+
+The new version would ideally --
+
+1. Require only the input submission file, comments file, and subreddits to be entered. 
+2. It should allow easy change on the following fronts -- the number of comments to be sampled in total, the number of comments to be sampled from each subreddit, and the number of comments to be sampled every year. 
+3. It should allow for the extraction of a specific subset of submissions which meet specific requirement, such as needing to understand if they are a question pertaining to themselves (is the word I the ''something'' in the text?)
+4. Splitting of training data. 
+
 

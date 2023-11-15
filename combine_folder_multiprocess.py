@@ -16,6 +16,7 @@
 #  - get all comments and submissions (assuming both types of dump files are under the reddit folder) that have an author field of Watchful1 or spez and output the results to a folder called pushshift.
 #    This will result in four files, pushshift/Watchful1_comments, pushshift/Watchful1_submissions, pushshift/spez_comments, pushshift/spez_submissions
 #    python3 combine_folder_multiprocess.py reddit --field author --value Watchful1,spez --output pushshift
+#    python3 combine_folder_multiprocess.py reddit --field subreddit --value Anger,socialanxiety,depression,AmItheAsshole,mentalhealth --output pushshift
 
 import zstandard
 import os
@@ -266,6 +267,10 @@ def process_file(file, queue, field, value, values, split_intermediate):
 			if file.lines_processed % 1000000 == 0:
 				file.bytes_processed = file_bytes_processed
 				queue.put(file)
+
+			if file.lines_matched > 100:
+				print("100 lines have been matched")
+				break
 
 		output_handle.close()
 		file.complete = True
