@@ -8,8 +8,8 @@ def extract_author_id(csv_file):
         for row in reader:
             prefix_id = ('t3_'+str(row[2]))
 
-            # title, subreddit, id, text - and we need only title and text to be mapped to an id
-            submission_info_dict[prefix_id] = [row[0], row[3]]
+            # title, subreddit, id, text - and we need only title, text, and subreddit to be mapped to an id
+            submission_info_dict[prefix_id] = [row[0], row[3], row[1]]
 
     return submission_info_dict
 

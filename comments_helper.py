@@ -73,12 +73,17 @@ def extract_comments(comments_path, output_path, submissions_csv, field_list= "l
 	line = None
 	created = None
 	bad_lines = 0
+
 	output_file = open(output_file_path, "w", encoding='utf-8', newline="")
+
 	writer = csv.writer(output_file)
 	writer.writerow(fields)
 
+	subreddit_counter = {}
+	id_tracker = {}
+
 	# Extract list of all the ids and authors corresponding to the submissions in that subreddit, 
-	# structured as {"id": ["title", "author"]}
+	# structured as {"id": ["title", "author", "subreddit"]}
 	sub_id_author_dict = extract_author_id(input_submissions_path)
 
 	try:
@@ -112,15 +117,46 @@ def extract_comments(comments_path, output_path, submissions_csv, field_list= "l
 							output_obj.append(str(sub_id_author_dict[link_id][0]))
 							output_obj.append(str(sub_id_author_dict[link_id][1]))
 							output_obj.append(str(obj[fields[1]]).encode("utf-8", errors='replace').decode())
-							writer.writerow(output_obj)
-							file_lines += 1
+
+
+							if link_id in id_tracker.keys():
+								if id_tracker[link_id] < 4 and len(str(sub_id_author_dict[link_id][1])) > 50:
+									
+									id_tracker[link_id] = 1
+									writer.writerow(output_obj)
+									file_lines += 1
+
+									subm_subreddit = sub_id_author_dict[link_id][2]
+
+									if subm_subreddit in sub_id_author_dict.keys():
+										subreddit_counter[subm_subreddit] += 1
+							
+									else:
+										subreddit_counter[subm_subreddit] = 1
+								
+								else:
+									pass
+
+							else:
+								id_tracker[link_id] = 1
+								writer.writerow(output_obj)
+								file_lines += 1
+
+								subm_subreddit = sub_id_author_dict[link_id][2]
+								if subm_subreddit in sub_id_author_dict.keys():
+									subreddit_counter[subm_subreddit] += 1
+							
+								else:
+									subreddit_counter[subm_subreddit] = 1
+
+
 	
 				created = datetime.utcfromtimestamp(int(obj['created_utc']))
 			except json.JSONDecodeError as err:
 				bad_lines += 1
 			
 			# This will control the speed at which progress is printed
-			if lines_processed % 10000 == 0:
+			if lines_processed % 100000 == 0:
 				log.info(f"{created.strftime('%Y-%m-%d %H:%M:%S')}: Lines_processed : {lines_processed:,} ")
 
 			# Limit to the number of lines that are to be processed before the program is terminated
@@ -140,8 +176,10 @@ def extract_comments(comments_path, output_path, submissions_csv, field_list= "l
 
 	output_file.close()
 	log.info(f"Complete : {file_lines:,} : {bad_lines:,}")
-	log.info(f"Lines_processed : {lines_processed:,} ")
+	log.info(f"Lines_processed in comments : {lines_processed:,} ")
+	print(subreddit_counter)
+	
 
 
-field_inputs = "link_id,body,author,parent_id"
-extract_comments('pushshift_working/RC_2019-10.zst', 'trial_combined_2.csv','trial_submissions.csv', field_inputs)
+# field_inputs = "link_id,body,author,parent_id"
+# extract_comments('reddit/comments/RC_2019-10.zst', 'trial_combined_3.csv','trial_submissions_2.csv', field_inputs)

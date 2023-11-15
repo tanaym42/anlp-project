@@ -20,13 +20,13 @@ Need to figure out how to sample more effectively. Do we sample some every year,
 
 **Iteration 3:**
 
-1. Run the combined 
+Just run the following command in terminal: 
+python3 main.py reddit/submissions/RS_2019-10.zst reddit/comments/RC_2019-10.zst output/2019-10.csv
 
-The new version would ideally --
+Before running the command, make sure RS and RC pairs are stored correctly in the files - and that the output file is of the format specified above ("output/YEAR-MM.csv). It should return for the specifications made. 
 
-1. Require only the input submission file, comments file, and subreddits to be entered. 
-2. It should allow easy change on the following fronts -- the number of comments to be sampled in total, the number of comments to be sampled from each subreddit, and the number of comments to be sampled every year. 
-3. It should allow for the extraction of a specific subset of submissions which meet specific requirement, such as needing to understand if they are a question pertaining to themselves (is the word I the ''something'' in the text?)
-4. Splitting of training data. 
+I would only like to be able to filter out very short comments and submissions -- but that might be done later in processing as well. 
+
+
 
 

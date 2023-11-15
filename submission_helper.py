@@ -119,15 +119,15 @@ def extract_submissions(input_path, output_path, comments_threshold = 0, sub_lis
 
 					sub = str(obj[fields[1]])
 					
-					# To maintain a counter of number of submissions per subreddit
+					# To maintain a counter of number of submissions per subreddit and 
+					# THE NUMBER HERE WILL DICTATE HOW MANY SUBMISSIONS IT PICKS UP FROM EACH SUBREDDIT
 					if sub in subreddit_counter.keys():
-						#print('testing here...for whether it is checking for subreddit')
-						if subreddit_counter[sub] < 300:
+						
+						if subreddit_counter[sub] < 100:
 							subreddit_counter[sub] += 1
 							writer.writerow(output_obj)
 						
 						else:
-							#print('testing here...is it failing the if condition')
 							pass
 					
 					else:
@@ -139,10 +139,10 @@ def extract_submissions(input_path, output_path, comments_threshold = 0, sub_lis
 				bad_lines += 1
 			file_lines += 1
 			
-			if lines_processed %100 == 0:
-				log.info(f"Lines processed:  {lines_processed}")
+			if lines_processed % 100000 == 0:
+				log.info(f"Lines processed in submissions:  {lines_processed}")
 
-			if file_lines % 1500 == 0:
+			if file_lines % 10000 == 0:
 				log.info(f"{created.strftime('%Y-%m-%d %H:%M:%S')} : {file_lines:,} : {bad_lines:,} : {(file_bytes_processed / file_size) * 100:.0f}%")
 	except KeyError as err:
 		log.info(f"Object has no key: {err}")
@@ -152,7 +152,7 @@ def extract_submissions(input_path, output_path, comments_threshold = 0, sub_lis
 		log.info(line)
 
 	output_file.close()
-	log.info(f"Complete : {file_lines:,} : {bad_lines:,}")
+	log.info(f"Completed in submissions : {file_lines:,} : {bad_lines:,}")
 	print(subreddit_counter)
 
-extract_submissions('pushshift_working/RS_2019-10.zst', 'trial_submissions_2.csv', 0)
+# extract_submissions('pushshift_working/RS_2019-10.zst', 'trial_submissions_2.csv', 0)
